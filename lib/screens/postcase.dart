@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class PostCasePage extends StatefulWidget {
+  const PostCasePage({super.key});
+
   @override
-  _PostCasePageState createState() => _PostCasePageState();
+  PostCasePageState createState() => PostCasePageState();
 }
 
-class _PostCasePageState extends State<PostCasePage> {
+class PostCasePageState extends State<PostCasePage> {
   final _formKey = GlobalKey<FormState>();
   final _mobileController = TextEditingController();
   final _dateController = TextEditingController();
@@ -74,7 +76,8 @@ class _PostCasePageState extends State<PostCasePage> {
                   decoration: InputDecoration(
                     labelText: "Date",
                     labelStyle: TextStyle(color: Colors.orange.shade900),
-                    suffixIcon: Icon(Icons.calendar_today, color: Colors.orange.shade900),
+                    suffixIcon: Icon(Icons.calendar_today,
+                        color: Colors.orange.shade900),
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.orange.shade900),
                     ),
@@ -244,7 +247,7 @@ class _PostCasePageState extends State<PostCasePage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "Post Case",
                         style: TextStyle(
