@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "183864556770",
+    "project_id": "project-court-basket",
+    "storage_bucket": "project-court-basket.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:183864556770:android:6663fa65eeebbe4939f2bb",
+        "android_client_info": {
+          "package_name": "com.ceal.courtproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "183864556770-edpe75jif8idl5bbj01oo632cp08htsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4Vua05KZA5p-lK920m_VrEozPLeuLnWU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "183864556770-edpe75jif8idl5bbj01oo632cp08htsp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "183864556770-8rdtg9ual8gjfr0saaurj4eq471ltp6h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.courtProject"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:183864556770:android:41fc99b00b9880b539f2bb",
+        "android_client_info": {
+          "package_name": "com.ceal.project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "183864556770-edpe75jif8idl5bbj01oo632cp08htsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4Vua05KZA5p-lK920m_VrEozPLeuLnWU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "183864556770-edpe75jif8idl5bbj01oo632cp08htsp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "183864556770-8rdtg9ual8gjfr0saaurj4eq471ltp6h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.courtProject"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

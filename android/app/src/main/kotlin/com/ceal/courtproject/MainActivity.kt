@@ -1,4 +1,4 @@
-package com.example.court_project
+package com.ceal.courtproject
 
 import io.flutter.embedding.android.FlutterActivity
 
