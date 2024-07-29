@@ -1,5 +1,5 @@
 import 'package:court_project/screens/dashboard.dart';
-import 'package:court_project/screens/signup.dart';
+import 'package:court_project/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {

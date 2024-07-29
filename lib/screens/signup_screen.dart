@@ -1,3 +1,4 @@
+import 'package:court_project/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
 
 class SignupPage extends StatefulWidget {
@@ -14,6 +15,8 @@ class _SignupPageState extends State<SignupPage> {
   late final TextEditingController _passwordController;
   late final TextEditingController _confirmPasswordController;
 
+  late final UserController _userController;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -22,6 +25,7 @@ class _SignupPageState extends State<SignupPage> {
     _confirmPasswordController = TextEditingController();
     _passwordController = TextEditingController();
     _upiIDController = TextEditingController();
+    _userController = UserController();
     super.initState();
   }
 
@@ -194,7 +198,11 @@ class _SignupPageState extends State<SignupPage> {
                         height: 40,
                       ),
                       MaterialButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _userController.signupWithEmailPassword(
+                              email: _nameController.text,
+                              password: _passwordController.text);
+                        },
                         height: 50,
                         color: Colors.orange[900],
                         shape: RoundedRectangleBorder(
