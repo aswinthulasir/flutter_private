@@ -1,3 +1,4 @@
+import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/screens/dashboard.dart';
 import 'package:court_project/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
@@ -122,23 +123,34 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 40),
-                      Text(
+                      const SizedBox(height: 40),
+                      const Text(
                         "Forgot Password?",
                         style: TextStyle(color: Colors.grey),
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       MaterialButton(
-                        onPressed: () {
-                          // Replace with actual login logic
-                          String username = "Thampi Annan"; // Example username
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  DashboardPage(username: username),
-                            ),
-                          );
+                        onPressed: () async {
+                          await UserController()
+                              .signinWithEmailPassword(
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                          )
+                              .then((value) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const DashboardPage(username: "dummy"),
+                              ),
+                            );
+                          }).catchError((err) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(err.toString()),
+                              ),
+                            );
+                          });
                         },
                         height: 50,
                         color: Colors.orange[900],
