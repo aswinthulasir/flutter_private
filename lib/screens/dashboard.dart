@@ -1,3 +1,4 @@
+import 'package:court_project/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'takecase.dart'; // TakeCasePage
 import 'postcase.dart'; // PostCasePage
@@ -106,6 +107,12 @@ class DashboardPage extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           // Implement action for Settings option
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsScreen(),
+                            ),
+                          );
                         },
                         child: Text(
                           "Settings",

@@ -1,9 +1,11 @@
 import 'package:court_project/configs/firebase_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:signals/signals.dart';
 
 class UserController {
   late final FirebaseAuth _auth;
+  static final Signal<User?> userSignal = signal<User?>(null);
 
   UserController() {
     _auth = FirebaseAuth.instanceFor(app: FirebaseConfig.firebaseConfig.value!);
@@ -13,8 +15,10 @@ class UserController {
     _auth.authStateChanges().listen((User? user) {
       if (user == null) {
         print('User is currently signed out!');
+        userSignal.value = null;
       } else {
         print('User is signed in!');
+        userSignal.value = user;
       }
     });
   }
@@ -76,5 +80,9 @@ class UserController {
     } catch (err) {
       rethrow;
     }
+  }
+
+  Future<void> signOut() async {
+    await _auth.signOut();
   }
 }

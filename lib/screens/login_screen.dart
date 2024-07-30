@@ -1,5 +1,4 @@
 import 'package:court_project/controllers/user_controller.dart';
-import 'package:court_project/screens/dashboard.dart';
 import 'package:court_project/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -13,12 +12,14 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
+  late final UserController _userController;
 
   @override
   void initState() {
     // TODO: implement initState
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
+    _userController = UserController();
     super.initState();
   }
 
@@ -131,20 +132,12 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 40),
                       MaterialButton(
                         onPressed: () async {
-                          await UserController()
+                          await _userController
                               .signinWithEmailPassword(
                             email: _emailController.text,
                             password: _passwordController.text,
                           )
-                              .then((value) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const DashboardPage(username: "dummy"),
-                              ),
-                            );
-                          }).catchError((err) {
+                              .catchError((err) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(err.toString()),
