@@ -17,7 +17,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     _userController = UserController();

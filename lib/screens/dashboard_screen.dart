@@ -2,7 +2,7 @@ import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'takecase.dart'; // TakeCasePage
-import 'postcase.dart'; // PostCasePage
+import 'postcase_screen.dart'; // PostCasePage
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
