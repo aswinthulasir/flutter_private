@@ -1,4 +1,5 @@
 import 'package:court_project/controllers/user_controller.dart';
+import 'package:court_project/main.dart';
 import 'package:flutter/material.dart';
 
 class SignupPage extends StatefulWidget {
@@ -9,6 +10,7 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  late final TextEditingController _emailController;
   late final TextEditingController _nameController;
   late final TextEditingController _mobileNumberController;
   late final TextEditingController _upiIDController;
@@ -20,6 +22,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   void initState() {
     // TODO: implement initState
+    _emailController = TextEditingController();
     _nameController = TextEditingController();
     _mobileNumberController = TextEditingController();
     _confirmPasswordController = TextEditingController();
@@ -32,6 +35,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   void dispose() {
     // TODO: implement dispose
+    _emailController.dispose();
     _nameController.dispose();
     _confirmPasswordController.dispose();
     _passwordController.dispose();
@@ -44,7 +48,6 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        // Wrap with SingleChildScrollView
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
@@ -133,6 +136,22 @@ class _SignupPageState extends State<SignupPage> {
                                         color: Colors.grey.shade200)),
                               ),
                               child: TextField(
+                                controller: _emailController,
+                                decoration: const InputDecoration(
+                                  hintText: "Email",
+                                  hintStyle: TextStyle(color: Colors.grey),
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(
+                                        color: Colors.grey.shade200)),
+                              ),
+                              child: TextField(
                                 controller: _mobileNumberController,
                                 decoration: const InputDecoration(
                                   hintText: "Mobile Number",
@@ -199,9 +218,7 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       MaterialButton(
                         onPressed: () {
-                          _userController.signupWithEmailPassword(
-                              email: _nameController.text,
-                              password: _passwordController.text);
+                          registerUser(context);
                         },
                         height: 50,
                         color: Colors.orange[900],
@@ -242,5 +259,44 @@ class _SignupPageState extends State<SignupPage> {
         ),
       ),
     );
+  }
+
+  void registerUser(BuildContext context) {
+    _userController
+        .signupWithEmailPassword(
+      email: _emailController.text,
+      password: _passwordController.text,
+    )
+        .then((value) {
+      if (value == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("An error occurred"),
+          ),
+        );
+        return;
+      }
+      _userController
+          .saveUserDetails(
+        name: _nameController.text,
+        userUID: value.user!.uid,
+        phoneNumber: int.parse(_mobileNumberController.text),
+        email: value.user!.email!,
+        theUPIID: _upiIDController.text,
+      )
+          .then((_) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const InitialiserScreen(),
+          ),
+        );
+      });
+    }).catchError((err) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(err.toString()),
+        ),
+      );
+    });
   }
 }

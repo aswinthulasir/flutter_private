@@ -2,6 +2,7 @@ import 'package:court_project/configs/firebase_config.dart';
 import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/screens/dashboard.dart';
 import 'package:court_project/screens/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -23,14 +24,12 @@ class InitialiserScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Watch.builder(builder: (context) {
-      if (UserController.userSignal.value == null) {
-        return const LoginPage();
-      } else {
-        return DashboardPage(
-          username: UserController.userSignal.value!.displayName ?? "User",
-        );
-      }
-    });
+    if (UserController.userSignal.value == null) {
+      return const LoginPage();
+    } else {
+      return DashboardPage(
+        username: UserController.userSignal.value?.displayName ?? "User",
+      );
+    }
   }
 }

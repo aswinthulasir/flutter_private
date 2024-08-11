@@ -1,4 +1,5 @@
 import 'package:court_project/controllers/user_controller.dart';
+import 'package:court_project/main.dart';
 import 'package:court_project/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -89,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Column(
                           children: <Widget>[
                             Container(
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 border: Border(
                                     bottom: BorderSide(
@@ -131,13 +132,20 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 40),
                       MaterialButton(
-                        onPressed: () async {
-                          await _userController
+                        onPressed: () {
+                          _userController
                               .signinWithEmailPassword(
                             email: _emailController.text,
                             password: _passwordController.text,
                           )
-                              .catchError((err) {
+                              .then((value) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const InitialiserScreen(),
+                              ),
+                            );
+                          }).catchError((err) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(err.toString()),
@@ -150,24 +158,25 @@ class _LoginPageState extends State<LoginPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             "Login",
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                      SizedBox(height: 10),
-                      Text("Don't have an account?"),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 10),
+                      const Text("Don't have an account?"),
+                      const SizedBox(height: 5),
                       MaterialButton(
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SignupPage(),
+                              builder: (context) => const SignupPage(),
                             ),
                           );
                         },

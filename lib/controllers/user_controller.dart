@@ -1,14 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:court_project/configs/firebase_config.dart';
+import 'package:court_project/models/user_collection_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:signals/signals.dart';
 
 class UserController {
   late final FirebaseAuth _auth;
+
+  late FirebaseFirestore db;
   static final Signal<User?> userSignal = signal<User?>(null);
+  static final Signal<UserCollection?> currentUserSignal =
+      signal<UserCollection?>(null);
 
   UserController() {
-    _auth = FirebaseAuth.instanceFor(app: FirebaseConfig.firebaseConfig.value!);
+    _auth = FirebaseAuth.instanceFor(
+      app: FirebaseConfig.firebaseConfig.value!,
+    );
+    db = FirebaseFirestore.instance;
   }
 
   void listenToUserChanges() {
@@ -23,36 +31,15 @@ class UserController {
     });
   }
 
-  Future<UserCredential> signInWithGoogle() async {
-    // Trigger the authentication flow
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
-
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-
-      // Once signed in, return the UserCredential
-      return await _auth.signInWithCredential(credential);
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
-  }
-
-  Future<void> signupWithEmailPassword(
+  Future<UserCredential?> signupWithEmailPassword(
       {required String email, required String password}) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
+      final user = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      return user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         throw "The password provided is too weak.";
@@ -63,6 +50,7 @@ class UserController {
       print(e);
       rethrow;
     }
+    return null;
   }
 
   Future<void> signinWithEmailPassword(
@@ -78,6 +66,30 @@ class UserController {
         throw "An error occurred, please try again later.";
       }
     } catch (err) {
+      rethrow;
+    }
+  }
+
+  Future<void> saveUserDetails({
+    required String name,
+    required String userUID,
+    required int phoneNumber,
+    required String email,
+    required String theUPIID,
+  }) async {
+    try {
+      final user = <String, dynamic>{
+        "name": name,
+        "phoneNumber": phoneNumber,
+        "email": email,
+        "UPIID": theUPIID,
+        "userUID": userUID,
+      };
+
+      await db.collection("users").add(user).then((value) {
+        print("User added with ID: ${value.id}");
+      });
+    } catch (e) {
       rethrow;
     }
   }

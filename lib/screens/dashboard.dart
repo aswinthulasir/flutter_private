@@ -4,9 +4,9 @@ import 'takecase.dart'; // TakeCasePage
 import 'postcase.dart'; // PostCasePage
 
 class DashboardPage extends StatelessWidget {
-  final String username;
+  final String? username;
 
-  const DashboardPage({super.key, required this.username});
+  const DashboardPage({super.key, this.username});
 
   @override
   Widget build(BuildContext context) {
