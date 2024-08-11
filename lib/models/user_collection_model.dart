@@ -18,7 +18,7 @@ class UserCollection {
       userUID: data['userUID'],
       name: data['name'],
       email: data['email'],
-      upiID: data['upiID'],
+      upiID: data['UPIID'],
       phoneNumber: data['phoneNumber'],
     );
   }

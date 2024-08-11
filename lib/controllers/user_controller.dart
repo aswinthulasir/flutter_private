@@ -19,14 +19,18 @@ class UserController {
     db = FirebaseFirestore.instance;
   }
 
-  void listenToUserChanges() {
-    _auth.authStateChanges().listen((User? user) {
+  void listenToUserChanges() async {
+    _auth.authStateChanges().listen((User? user) async {
       if (user == null) {
         print('User is currently signed out!');
         userSignal.value = null;
+        currentUserSignal.value = null;
       } else {
         print('User is signed in!');
+
         userSignal.value = user;
+        final userDetails = await getUserDetails(user.uid);
+        currentUserSignal.value = userDetails;
       }
     });
   }
@@ -92,6 +96,22 @@ class UserController {
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<UserCollection?> getUserDetails(String userUID) async {
+    try {
+      final user = await db
+          .collection("users")
+          .where("userUID", isEqualTo: userUID)
+          .get();
+
+      if (user.docs.isNotEmpty) {
+        return UserCollection.fromMap(user.docs.first.data());
+      }
+    } catch (e) {
+      rethrow;
+    }
+    return null;
   }
 
   Future<void> signOut() async {

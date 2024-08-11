@@ -21,7 +21,6 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _emailController = TextEditingController();
     _nameController = TextEditingController();
     _mobileNumberController = TextEditingController();
@@ -34,7 +33,6 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _emailController.dispose();
     _nameController.dispose();
     _confirmPasswordController.dispose();

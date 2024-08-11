@@ -1,12 +1,11 @@
+import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'takecase.dart'; // TakeCasePage
 import 'postcase.dart'; // PostCasePage
 
 class DashboardPage extends StatelessWidget {
-  final String? username;
-
-  const DashboardPage({super.key, this.username});
+  const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,23 +25,26 @@ class DashboardPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
             Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "Welcome, $username",
-                    style: TextStyle(color: Colors.white, fontSize: 25),
+                    "Welcome, ${UserController.currentUserSignal.value?.name ?? "User"}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                    ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 100),
+            const SizedBox(height: 100),
             Expanded(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(60),
@@ -50,10 +52,10 @@ class DashboardPage extends StatelessWidget {
                   ),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(30),
+                  padding: const EdgeInsets.all(30),
                   child: Column(
                     children: <Widget>[
-                      SizedBox(height: 60),
+                      const SizedBox(height: 60),
                       MaterialButton(
                         onPressed: () {
                           Navigator.push(
@@ -68,7 +70,7 @@ class DashboardPage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             "Take Case",
                             style: TextStyle(
@@ -78,7 +80,7 @@ class DashboardPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       MaterialButton(
                         onPressed: () {
                           Navigator.push(
@@ -93,7 +95,7 @@ class DashboardPage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             "Post Case",
                             style: TextStyle(
