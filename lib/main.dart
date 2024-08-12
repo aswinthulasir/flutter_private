@@ -1,13 +1,13 @@
 import 'package:court_project/configs/firebase_config.dart';
+import 'package:court_project/configs/local_database.dart';
 import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/screens/dashboard_screen.dart';
 import 'package:court_project/screens/login_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:signals/signals_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  LocalDatabase.initialise();
   FirebaseConfig.firebaseConfig.value =
       await FirebaseConfig().initialiseFirebase();
   UserController().listenToUserChanges();
@@ -27,9 +27,7 @@ class InitialiserScreen extends StatelessWidget {
     if (UserController.userSignal.value == null) {
       return const LoginPage();
     } else {
-      return DashboardPage(
-        
-      );
+      return const DashboardPage();
     }
   }
 }
