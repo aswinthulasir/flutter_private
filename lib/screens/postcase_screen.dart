@@ -1,6 +1,8 @@
-import 'package:court_project/configs/local_database.dart';
+import 'package:court_project/controllers/case_controller.dart';
+import 'package:court_project/controllers/court_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:signals/signals.dart';
 
 class PostCasePage extends StatefulWidget {
   const PostCasePage({super.key});
@@ -16,7 +18,25 @@ class PostCasePageState extends State<PostCasePage> {
   final _advocateNameController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  String? _selectedState;
+  final _selectedState = signal<String>("Kerala");
+  final _selectedDistrict = signal<String?>(null);
+  final _selectedCourtComplex = signal<String?>(null);
+
+  late final _selectedDistricts = computed(() {
+    if (_selectedState.value == "Kerala") {
+      return CourtController().getListOfDistricts();
+    }
+    return null;
+  });
+
+  late final _selectedCourtComplexes = computed(() {
+    if (_selectedDistrict.value != null) {
+      return CourtController().getListOfCourts(_selectedDistrict.value!);
+    }
+    return null;
+  });
+
+  final _caseController = CaseController();
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +107,7 @@ class PostCasePageState extends State<PostCasePage> {
                 const SizedBox(height: 20),
                 DropdownButtonFormField<String>(
                   hint: const Text("Select State"),
-                  value: _selectedState,
+                  value: _selectedState.value,
                   decoration: InputDecoration(
                     labelText: "State",
                     labelStyle: TextStyle(color: Colors.orange.shade900),
@@ -96,15 +116,69 @@ class PostCasePageState extends State<PostCasePage> {
                     ),
                   ),
                   onChanged: (newValue) async {
-                    print(await LocalDatabase().getKeralaCourtComplexes());
                     setState(() {
-                      _selectedState = newValue;
+                      _selectedState.value = newValue ?? "Kerala";
                     });
                   },
-                  items: [DropdownMenuItem(child: Text("Kerala"), value: "KL")],
+                  items: const [
+                    DropdownMenuItem(
+                      value: "Kerala",
+                      child: Text("Kerala"),
+                    ),
+                    DropdownMenuItem(
+                      value: "Coming",
+                      child: Text("Coming Soon"),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
+                _selectedDistricts.value != null
+                    ? DropdownButtonFormField(
+                        hint: const Text("Select District"),
+                        decoration: InputDecoration(
+                          labelText: "District",
+                          labelStyle: TextStyle(color: Colors.orange.shade900),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.orange.shade900),
+                          ),
+                        ),
+                        items: _selectedDistricts.value!
+                            .map((e) =>
+                                DropdownMenuItem(value: e, child: Text(e)))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedDistrict.value = value ?? "Trivandrum";
+                          });
+                        })
+                    : const SizedBox(),
                 const SizedBox(height: 20),
+                _selectedCourtComplexes.value != null
+                    ? Column(
+                        children: [
+                          DropdownButtonFormField(
+                              decoration: InputDecoration(
+                                labelText: "Court Complex",
+                                labelStyle:
+                                    TextStyle(color: Colors.orange.shade900),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.orange.shade900),
+                                ),
+                              ),
+                              items: _selectedCourtComplexes.value!
+                                  .map((e) => DropdownMenuItem(
+                                      value: e, child: Text(e)))
+                                  .toList(),
+                              onChanged: (value) {
+                                _selectedCourtComplex.value =
+                                    value ?? "Trivandrum District Court";
+                              }),
+                          const SizedBox(height: 20),
+                        ],
+                      )
+                    : const SizedBox(),
                 TextFormField(
                   controller: _advocateNameController,
                   decoration: InputDecoration(
@@ -121,7 +195,7 @@ class PostCasePageState extends State<PostCasePage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _descriptionController,
                   decoration: InputDecoration(
@@ -134,12 +208,36 @@ class PostCasePageState extends State<PostCasePage> {
                   maxLines: 4,
                   maxLength: 1000,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Center(
                   child: MaterialButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         // Implement post case logic
+                        _caseController
+                            .postCase(
+                          mobileNumber: int.parse(_mobileController.text),
+                          date: _dateController.text,
+                          state: _selectedState.value,
+                          district: _selectedDistrict.value!,
+                          court: _selectedCourtComplex.value!,
+                          advocateName: _advocateNameController.text,
+                          caseDescription: _descriptionController.text,
+                        )
+                            .then((value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  "Case posted successfully with ID: $value"),
+                            ),
+                          );
+                        }).catchError((err) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(err.toString()),
+                            ),
+                          );
+                        });
                       }
                     },
                     height: 50,

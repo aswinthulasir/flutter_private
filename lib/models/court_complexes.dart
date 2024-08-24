@@ -1,16 +1,23 @@
 class CourtComplex {
   final String district;
-  final String courtComplex;
+  final List<String> courts;
 
   CourtComplex({
     required this.district,
-    required this.courtComplex,
+    required this.courts,
   });
+
+  factory CourtComplex.fromMap(Map<String, dynamic> data) {
+    return CourtComplex(
+      district: data['district'],
+      courts: List<String>.from(data['courts']),
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
-      'District': district,
-      'CourtComplexName': courtComplex,
+      'district': district,
+      'courts': courts,
     };
   }
 }
