@@ -1,7 +1,7 @@
 import 'package:court_project/controllers/case_controller.dart';
 import 'package:court_project/controllers/court_controller.dart';
+import 'package:court_project/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:signals/signals.dart';
 
 class PostCasePage extends StatefulWidget {
@@ -13,20 +13,17 @@ class PostCasePage extends StatefulWidget {
 
 class PostCasePageState extends State<PostCasePage> {
   final _formKey = GlobalKey<FormState>();
-  final _dateController = TextEditingController();
   final _mobileController = TextEditingController();
   final _advocateNameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _dateController = TextEditingController();
 
   final _selectedState = signal<String>("Kerala");
   final _selectedDistrict = signal<String?>(null);
   final _selectedCourtComplex = signal<String?>(null);
 
   late final _selectedDistricts = computed(() {
-    if (_selectedState.value == "Kerala") {
-      return CourtController().getListOfDistricts();
-    }
-    return null;
+    return CourtController().getListOfDistricts(_selectedState.value);
   });
 
   late final _selectedCourtComplexes = computed(() {
@@ -36,7 +33,14 @@ class PostCasePageState extends State<PostCasePage> {
     return null;
   });
 
+  final _selectedDate = signal(DateTime.now());
   final _caseController = CaseController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,10 +100,10 @@ class PostCasePageState extends State<PostCasePage> {
                       lastDate: DateTime(2101),
                     );
                     if (pickedDate != null) {
-                      String formattedDate =
-                          DateFormat('dd/MM/yyyy').format(pickedDate);
                       setState(() {
-                        _dateController.text = formattedDate;
+                        _selectedDate.value = pickedDate;
+                        _dateController.text =
+                            "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
                       });
                     }
                   },
@@ -216,8 +220,10 @@ class PostCasePageState extends State<PostCasePage> {
                         // Implement post case logic
                         _caseController
                             .postCase(
+                          userId:
+                              UserController.currentUserSignal.value!.userUID,
                           mobileNumber: int.parse(_mobileController.text),
-                          date: _dateController.text,
+                          date: _selectedDate.value,
                           state: _selectedState.value,
                           district: _selectedDistrict.value!,
                           court: _selectedCourtComplex.value!,

@@ -5,8 +5,9 @@ class CaseController {
   final db = FirebaseFirestore.instance;
 
   Future<String> postCase({
+    required String userId,
     required int mobileNumber,
-    required String date,
+    required DateTime date,
     required String state,
     required String district,
     required String court,
@@ -16,6 +17,7 @@ class CaseController {
     // Post case to the database
     try {
       final caseToBePosted = <String, dynamic>{
+        "userId": userId,
         'mobileNumber': mobileNumber,
         'date': date,
         'state': state,

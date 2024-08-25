@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Case {
   final String id;
+  final String userId;
   final int mobileNumber;
-  final String date;
+  final DateTime date;
   final String state;
   final String district;
   final String court;
@@ -11,6 +12,7 @@ class Case {
   final String caseDescription;
 
   Case({
+    required this.userId,
     required this.id,
     required this.mobileNumber,
     required this.date,
@@ -27,6 +29,7 @@ class Case {
   ) {
     final data = snapshot.data();
     return Case(
+      userId: data?["userId"],
       id: snapshot.id,
       mobileNumber: data?['mobileNumber'],
       date: data?['date'],
@@ -40,6 +43,7 @@ class Case {
 
   Map<String, dynamic> toFirestore() {
     return {
+      'userId': userId,
       'mobileNumber': mobileNumber,
       'date': date,
       'state': state,
