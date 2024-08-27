@@ -36,9 +36,9 @@ class CaseController {
   }
 
   Future<List<Case>> getCases({
-    required String state,
-    required String district,
-    required String date,
+    String? state,
+    String? district,
+    String? date,
   }) async {
     // Get cases from the database
     try {

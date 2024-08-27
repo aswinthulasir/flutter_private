@@ -28,11 +28,12 @@ class Case {
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
+    final date = data?['date'] as Timestamp;
     return Case(
       userId: data?["userId"],
       id: snapshot.id,
       mobileNumber: data?['mobileNumber'],
-      date: data?['date'],
+      date: date.toDate(),
       state: data?['state'],
       district: data?['district'],
       court: data?['court'],

@@ -33,12 +33,14 @@ class PostCasePageState extends State<PostCasePage> {
     return null;
   });
 
-  final _selectedDate = signal(DateTime.now());
+  final _selectedDate = signal<DateTime>(DateTime.now());
   final _caseController = CaseController();
 
   @override
   void initState() {
     // TODO: implement initState
+    _dateController.text =
+        "${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}";
     super.initState();
   }
 
@@ -48,11 +50,7 @@ class PostCasePageState extends State<PostCasePage> {
       appBar: AppBar(
         title: const Text(
           "Post a Case",
-          style: TextStyle(
-            color: Colors.white,
-          ),
         ),
-        backgroundColor: Colors.orange.shade900,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -66,9 +64,8 @@ class PostCasePageState extends State<PostCasePage> {
                   controller: _mobileController,
                   decoration: InputDecoration(
                     labelText: "Mobile No.",
-                    labelStyle: TextStyle(color: Colors.orange.shade900),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange.shade900),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   keyboardType: TextInputType.phone,
@@ -84,11 +81,11 @@ class PostCasePageState extends State<PostCasePage> {
                   controller: _dateController,
                   decoration: InputDecoration(
                     labelText: "Date",
-                    labelStyle: TextStyle(color: Colors.orange.shade900),
-                    suffixIcon: Icon(Icons.calendar_today,
-                        color: Colors.orange.shade900),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange.shade900),
+                    suffixIcon: const Icon(
+                      Icons.calendar_today,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   readOnly: true,
@@ -114,9 +111,8 @@ class PostCasePageState extends State<PostCasePage> {
                   value: _selectedState.value,
                   decoration: InputDecoration(
                     labelText: "State",
-                    labelStyle: TextStyle(color: Colors.orange.shade900),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange.shade900),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   onChanged: (newValue) async {
@@ -136,15 +132,13 @@ class PostCasePageState extends State<PostCasePage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                _selectedDistricts.value != null
+                _selectedDistricts.value.isNotEmpty
                     ? DropdownButtonFormField(
                         hint: const Text("Select District"),
                         decoration: InputDecoration(
                           labelText: "District",
-                          labelStyle: TextStyle(color: Colors.orange.shade900),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.orange.shade900),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         items: _selectedDistricts.value!
@@ -164,11 +158,8 @@ class PostCasePageState extends State<PostCasePage> {
                           DropdownButtonFormField(
                               decoration: InputDecoration(
                                 labelText: "Court Complex",
-                                labelStyle:
-                                    TextStyle(color: Colors.orange.shade900),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.orange.shade900),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                               items: _selectedCourtComplexes.value!
@@ -187,9 +178,8 @@ class PostCasePageState extends State<PostCasePage> {
                   controller: _advocateNameController,
                   decoration: InputDecoration(
                     labelText: "Advocate Name",
-                    labelStyle: TextStyle(color: Colors.orange.shade900),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange.shade900),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   validator: (value) {
@@ -203,13 +193,12 @@ class PostCasePageState extends State<PostCasePage> {
                 TextFormField(
                   controller: _descriptionController,
                   decoration: InputDecoration(
-                    labelText: "Give a description of your case",
-                    labelStyle: TextStyle(color: Colors.orange.shade900),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange.shade900),
+                    labelText: "Description of case",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  maxLines: 4,
+                  maxLines: 2,
                   maxLength: 1000,
                 ),
                 const SizedBox(height: 20),
@@ -246,15 +235,16 @@ class PostCasePageState extends State<PostCasePage> {
                         });
                       }
                     },
-                    height: 50,
-                    color: Colors.orange[900],
+                    height: 60,
+                    color: Colors.black,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Center(
                       child: Text(
                         "Post Case",
                         style: TextStyle(
+                          fontSize: 18,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),

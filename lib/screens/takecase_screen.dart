@@ -1,165 +1,160 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:court_project/controllers/court_controller.dart';
+import 'package:court_project/models/case_model.dart';
+import 'package:court_project/widgets/case_list_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:paginate_firestore_plus/paginate_firestore.dart';
 
-class TakeCasePage extends StatefulWidget {
-  const TakeCasePage({super.key});
+class TakecaseScreen extends StatefulWidget {
+  const TakecaseScreen({super.key});
 
   @override
-  _TakeCasePageState createState() => _TakeCasePageState();
+  State<TakecaseScreen> createState() => _TakecaseScreenState();
 }
 
-class _TakeCasePageState extends State<TakeCasePage> {
-  String? selectedState;
-  String? selectedDistrict;
-  List<String> states = [];
-  List<String> districts = [];
+class _TakecaseScreenState extends State<TakecaseScreen> {
+  List<String> list = <String>['One', 'Two', 'Three', 'Four'];
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  final db = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orange.shade900,
-        title: Text("Take a Case"),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        title: const Text("Take Case"),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              colors: [
-                Colors.orange.shade900,
-                Colors.orange.shade800,
-                Colors.orange.shade400,
-              ],
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(height: 20),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(60),
-                    topRight: Radius.circular(60),
-                  ),
-                ),
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 20),
-                    DropdownButton<String>(
-                      hint: Text("State"),
-                      value: selectedState,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedState = value;
-                          selectedDistrict = null;
-                        });
-                      },
-                      items: states.map((state) {
-                        return DropdownMenuItem<String>(
-                          value: state,
-                          child: Text(state),
+      body: Center(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 8, left: 8),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    FilterChip(
+                      onSelected: (_) {
+                        showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2101),
                         );
-                      }).toList(),
-                    ),
-                    DropdownButton<String>(
-                      hint: Text("District"),
-                      value: selectedDistrict,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedDistrict = value;
-                        });
                       },
-                      items: districts.map((district) {
-                        return DropdownMenuItem<String>(
-                          value: district,
-                          child: Text(district),
-                        );
-                      }).toList(),
+                      label: const Text("Date"),
+                      avatar: const Icon(Icons.calendar_today),
                     ),
-                    SizedBox(height: 20),
-                    TableCalendar(
-                      firstDay: DateTime.utc(2020, 1, 1),
-                      lastDay: DateTime.utc(2030, 12, 31),
-                      focusedDay: DateTime.now(),
+                    const SizedBox(
+                      width: 10,
                     ),
-                    SizedBox(height: 20),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade100,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("District court",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          CheckboxListTile(
-                            title: Text("1. Case 1"),
-                            value: false, // Implement your own state management
-                            onChanged: (bool? value) {},
-                          ),
-                          CheckboxListTile(
-                            title: Text("2. Case 2"),
-                            value: false, // Implement your own state management
-                            onChanged: (bool? value) {},
-                          ),
-                          Text("Sub court",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          CheckboxListTile(
-                            title: Text("1. Case 3"),
-                            value: false, // Implement your own state management
-                            onChanged: (bool? value) {},
-                          ),
-                          CheckboxListTile(
-                            title: Text("2. Case 4"),
-                            value: false, // Implement your own state management
-                            onChanged: (bool? value) {},
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    MaterialButton(
-                      onPressed: () {
-                        // Take Case logic here
+                    FilterChip(
+                      onSelected: (_) {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Select State"),
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: ["Kerala"].map((e) {
+                                      return ListTile(
+                                        title: Text(e),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              );
+                            });
                       },
-                      height: 50,
-                      color: Colors.orange[900],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "Take Case",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                      label: const Text("State"),
+                      avatar: const Icon(Icons.arrow_drop_down),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    FilterChip(
+                      onSelected: (_) {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Select District"),
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: CourtController()
+                                        .getListOfDistricts("Kerala")
+                                        .map((e) {
+                                      return ListTile(
+                                        title: Text(e),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              );
+                            });
+                      },
+                      label: const Text("District"),
+                      avatar: const Icon(Icons.arrow_drop_down),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    FilterChip(
+                      onSelected: (_) {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                  title: const Text("Select Court"),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: CourtController()
+                                          .getListOfCourts("Thiruvananthapuram")
+                                          .map((e) {
+                                        return ListTile(
+                                          title: Text(e),
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ));
+                            });
+                      },
+                      label: const Text("Court"),
+                      avatar: const Icon(Icons.arrow_drop_down),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+            Expanded(
+              child: PaginateFirestore(
+                itemBuilder: (context, snapshots, index) {
+                  final Case caseData = Case.fromFirestore(
+                    snapshots[index] as DocumentSnapshot<Map<String, dynamic>>,
+                    null,
+                  );
+                  return CaseCardListTile(
+                    caseData: caseData,
+                  );
+                },
+                query: db.collection("cases").orderBy("date", descending: true),
+                itemBuilderType: PaginateBuilderType.listView,
+                isLive: true,
+              ),
+            ),
+          ],
         ),
       ),
     );
