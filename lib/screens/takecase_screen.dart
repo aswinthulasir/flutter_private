@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:court_project/controllers/case_controller.dart';
 import 'package:court_project/controllers/court_controller.dart';
 import 'package:court_project/models/case_model.dart';
 import 'package:court_project/widgets/case_list_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:paginate_firestore_plus/paginate_firestore.dart';
+import 'package:signals/signals_flutter.dart';
 
 class TakecaseScreen extends StatefulWidget {
   const TakecaseScreen({super.key});
@@ -13,7 +14,10 @@ class TakecaseScreen extends StatefulWidget {
 }
 
 class _TakecaseScreenState extends State<TakecaseScreen> {
-  List<String> list = <String>['One', 'Two', 'Three', 'Four'];
+  final _selectedDate = signal<Timestamp?>(null);
+  final _selectedState = signal<String?>(null);
+  final _selectedDistrict = signal<String?>(null);
+  final _selectedCourt = signal<String?>(null);
 
   final db = FirebaseFirestore.instance;
 
@@ -33,15 +37,24 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                 child: Row(
                   children: [
                     FilterChip(
-                      onSelected: (_) {
-                        showDatePicker(
+                      onSelected: (_) async {
+                        final pickedDate = await showDatePicker(
                           context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2101),
                         );
+
+                        setState(() {
+                          _selectedDate.value =
+                              Timestamp.fromMillisecondsSinceEpoch(
+                            DateTime.now().millisecondsSinceEpoch,
+                          );
+                        });
                       },
-                      label: const Text("Date"),
+                      label: Text(_selectedDate.value == null
+                          ? "Date"
+                          : _selectedDate.value!.toDate().toString()),
                       avatar: const Icon(Icons.calendar_today),
                     ),
                     const SizedBox(
@@ -61,6 +74,9 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                                       return ListTile(
                                         title: Text(e),
                                         onTap: () {
+                                          setState(() {
+                                            _selectedState.value = e;
+                                          });
                                           Navigator.pop(context);
                                         },
                                       );
@@ -92,6 +108,8 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                                       return ListTile(
                                         title: Text(e),
                                         onTap: () {
+                                          setState(() {});
+                                          _selectedDistrict.value = e;
                                           Navigator.pop(context);
                                         },
                                       );
@@ -123,6 +141,9 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                                         return ListTile(
                                           title: Text(e),
                                           onTap: () {
+                                            setState(() {
+                                              _selectedCourt.value = e;
+                                            });
                                             Navigator.pop(context);
                                           },
                                         );
@@ -139,19 +160,45 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
               ),
             ),
             Expanded(
-              child: PaginateFirestore(
-                itemBuilder: (context, snapshots, index) {
-                  final Case caseData = Case.fromFirestore(
-                    snapshots[index] as DocumentSnapshot<Map<String, dynamic>>,
-                    null,
-                  );
-                  return CaseCardListTile(
-                    caseData: caseData,
+              child: Watch.builder(
+                dependencies: [_selectedDate],
+                builder: (context) {
+                  return FutureBuilder(
+                    future: CaseController().getCases(
+                      state: _selectedState.value,
+                      district: _selectedDistrict.value,
+                      date: _selectedDate.value?.toDate().toString(),
+                    ),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (snapshot.hasError) {
+                        return const Center(
+                          child: Text("An error occurred"),
+                        );
+                      }
+                      final cases = snapshot.data as List<Case>;
+
+                      if (cases.isEmpty) {
+                        return const Center(
+                          child: Text("No cases found"),
+                        );
+                      }
+
+                      return ListView.builder(
+                        itemCount: cases.length,
+                        itemBuilder: (context, index) {
+                          return CaseCardListTile(
+                            caseData: cases[index],
+                          );
+                        },
+                      );
+                    },
                   );
                 },
-                query: db.collection("cases").orderBy("date", descending: true),
-                itemBuilderType: PaginateBuilderType.listView,
-                isLive: true,
               ),
             ),
           ],

@@ -41,6 +41,17 @@ class DashboardPage extends StatelessWidget {
                   );
                 }),
             DashboardListTile(
+                assetPath: "assets/images/taken_case.png",
+                description: "You can see the taken cases here.",
+                screenName: "Taken Cases",
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const TakecaseScreen(),
+                    ),
+                  );
+                }),
+            DashboardListTile(
               assetPath: "assets/images/settings.png",
               description: "You can view your profile here",
               screenName: "Settings",
