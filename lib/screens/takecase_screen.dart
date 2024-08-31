@@ -15,27 +15,76 @@ class TakecaseScreen extends StatefulWidget {
 
 class _TakecaseScreenState extends State<TakecaseScreen> {
   final _selectedDate = signal<Timestamp?>(null);
-  final _selectedState = signal<String?>(null);
+  final _selectedState = signal<String?>("Kerala");
   final _selectedDistrict = signal<String?>(null);
   final _selectedCourt = signal<String?>(null);
 
   final db = FirebaseFirestore.instance;
+
+  get onSelected => null;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Take Case"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _selectedCourt.value = null;
+                _selectedDate.value = null;
+                _selectedDistrict.value = null;
+                _selectedState.value = null;
+              });
+            },
+            icon: const Icon(Icons.refresh),
+          )
+        ],
       ),
       body: Center(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 8, left: 8),
+              padding: const EdgeInsets.only(top: 2),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
+                    FilterChip(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: const BorderSide(color: Colors.redAccent),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 6,
+                        ),
+                        label: const Row(
+                          children: [
+                            Text(
+                              "Reset",
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
+                              Icons.clear,
+                              color: Colors.redAccent,
+                            ),
+                          ],
+                        ),
+                        onSelected: (_) {
+                          setState(() {
+                            _selectedCourt.value = null;
+                            _selectedDate.value = null;
+                            _selectedDistrict.value = null;
+                            _selectedState.value = null;
+                          });
+                        }),
+                    const SizedBox(
+                      width: 10,
+                    ),
                     FilterChip(
                       onSelected: (_) async {
                         final pickedDate = await showDatePicker(
@@ -48,13 +97,13 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                         setState(() {
                           _selectedDate.value =
                               Timestamp.fromMillisecondsSinceEpoch(
-                            DateTime.now().millisecondsSinceEpoch,
+                            pickedDate!.millisecondsSinceEpoch,
                           );
                         });
                       },
                       label: Text(_selectedDate.value == null
                           ? "Date"
-                          : _selectedDate.value!.toDate().toString()),
+                          : formatDate(_selectedDate.value!.toDate())),
                       avatar: const Icon(Icons.calendar_today),
                     ),
                     const SizedBox(
@@ -86,12 +135,27 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                               );
                             });
                       },
-                      label: const Text("State"),
-                      avatar: const Icon(Icons.arrow_drop_down),
+                      label: Text(_selectedState.value == null
+                          ? "State"
+                          : "State: ${_selectedState.value}"),
+                      avatar: const Icon(
+                        Icons.arrow_drop_down,
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
                     ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 2, left: 8),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
                     FilterChip(
                       onSelected: (_) {
                         showDialog(
@@ -103,7 +167,8 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: CourtController()
-                                        .getListOfDistricts("Kerala")
+                                        .getListOfDistricts(
+                                            _selectedState.value ?? "Kerala")
                                         .map((e) {
                                       return ListTile(
                                         title: Text(e),
@@ -119,7 +184,9 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                               );
                             });
                       },
-                      label: const Text("District"),
+                      label: Text(_selectedDistrict.value == null
+                          ? "District"
+                          : "District: ${_selectedDistrict.value}"),
                       avatar: const Icon(Icons.arrow_drop_down),
                     ),
                     const SizedBox(
@@ -128,32 +195,41 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                     FilterChip(
                       onSelected: (_) {
                         showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                  title: const Text("Select Court"),
-                                  content: SingleChildScrollView(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: CourtController()
-                                          .getListOfCourts("Thiruvananthapuram")
-                                          .map((e) {
-                                        return ListTile(
-                                          title: Text(e),
-                                          onTap: () {
-                                            setState(() {
-                                              _selectedCourt.value = e;
-                                            });
-                                            Navigator.pop(context);
-                                          },
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ));
-                            });
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text("Select Court"),
+                              content: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: CourtController()
+                                      .getListOfCourts(
+                                    _selectedDistrict.value ??
+                                        "Thiruvananthapuram",
+                                  )
+                                      .map((e) {
+                                    return ListTile(
+                                      title: Text(e),
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedCourt.value = e;
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            );
+                          },
+                        );
                       },
-                      label: const Text("Court"),
-                      avatar: const Icon(Icons.arrow_drop_down),
+                      label: Text(_selectedCourt.value == null
+                          ? "Court"
+                          : "Court: ${_selectedCourt.value}"),
+                      avatar: const Icon(
+                        Icons.arrow_drop_down,
+                      ),
                     ),
                   ],
                 ),
@@ -205,5 +281,9 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
         ),
       ),
     );
+  }
+
+  formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
   }
 }
