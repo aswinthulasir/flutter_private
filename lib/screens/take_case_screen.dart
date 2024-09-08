@@ -269,6 +269,7 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                         itemBuilder: (context, index) {
                           return CaseCardListTile(
                             caseData: cases[index],
+                            color: Colors.teal[50]!,
                           );
                         },
                       );

@@ -114,6 +114,25 @@ class UserController {
     return null;
   }
 
+  Future<void> editUserDetails(String name, String email, String upiID) async {
+    try {
+      final user = await db
+          .collection("users")
+          .where("userUID", isEqualTo: currentUserSignal.value!.userUID)
+          .get();
+
+      if (user.docs.isNotEmpty) {
+        await db.collection("users").doc(user.docs.first.id).update({
+          "name": name,
+          "email": email,
+          "UPIID": upiID,
+        });
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> signOut() async {
     await _auth.signOut();
   }

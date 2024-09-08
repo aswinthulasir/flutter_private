@@ -1,19 +1,28 @@
 import 'package:court_project/models/case_model.dart';
-import 'package:court_project/screens/case_details_screen.dart';
+import 'package:court_project/screens/posted_case_details_screen.dart';
+import 'package:court_project/screens/taken_cases_details_screen.dart';
+
 import 'package:flutter/material.dart';
 
-class CaseCardListTile extends StatefulWidget {
-  const CaseCardListTile(
-      {super.key, required this.caseData, required this.color});
+class PostedCaseCardListTile extends StatefulWidget {
+  const PostedCaseCardListTile({
+    super.key,
+    required this.caseData,
+    required this.color,
+    required this.onDelete,
+    required this.isPosted,
+  });
 
   final Case caseData;
   final Color color;
+  final VoidCallback onDelete;
+  final bool isPosted;
 
   @override
-  State<CaseCardListTile> createState() => _CaseCardListTileState();
+  State<PostedCaseCardListTile> createState() => _PostedCaseCardListTileState();
 }
 
-class _CaseCardListTileState extends State<CaseCardListTile> {
+class _PostedCaseCardListTileState extends State<PostedCaseCardListTile> {
   String timestamp = "";
 
   @override
@@ -44,9 +53,11 @@ class _CaseCardListTileState extends State<CaseCardListTile> {
           child: ListTile(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return CaseDetailsScreen(
-                  caseDetails: widget.caseData,
-                );
+                if (widget.isPosted) {
+                  return PostedCaseDetailsScreen(caseDetails: widget.caseData);
+                } else {
+                  return TakenCasesDetailsScreen(caseDetails: widget.caseData);
+                }
               }));
             },
             title: Text(
@@ -56,17 +67,30 @@ class _CaseCardListTileState extends State<CaseCardListTile> {
                 overflow: TextOverflow.clip,
               ),
             ),
-            subtitle: Text(
-              widget.caseData.court,
-              style: const TextStyle(
-                overflow: TextOverflow.ellipsis,
-              ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.caseData.court,
+                  style: const TextStyle(
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  timestamp,
+                  style: const TextStyle(
+                    fontSize: 10,
+                  ),
+                ),
+              ],
             ),
+
             //show timestamp
-            trailing: Text(
-              timestamp,
-              style: const TextStyle(
-                fontSize: 10,
+            trailing: IconButton(
+              onPressed: widget.onDelete,
+              icon: const Icon(
+                Icons.delete,
+                color: Colors.red,
               ),
             ),
           ),

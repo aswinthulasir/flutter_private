@@ -9,6 +9,7 @@ void main() async {
   FirebaseConfig.firebaseConfig.value =
       await FirebaseConfig().initialiseFirebase();
   UserController().listenToUserChanges();
+  
   runApp(
     const MaterialApp(
       debugShowCheckedModeBanner: false,

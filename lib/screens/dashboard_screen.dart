@@ -1,9 +1,11 @@
 import 'package:court_project/controllers/user_controller.dart';
+import 'package:court_project/screens/posted_case_screen.dart';
 import 'package:court_project/screens/settings_screen.dart';
-import 'package:court_project/screens/takecase_screen.dart';
+import 'package:court_project/screens/take_case_screen.dart';
+import 'package:court_project/screens/taken_cases_screen.dart';
 import 'package:court_project/widgets/dashboard_list_tile.dart';
 import 'package:flutter/material.dart';
-import 'postcase_screen.dart';
+import 'post_case_screen.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -47,10 +49,22 @@ class DashboardPage extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const TakecaseScreen(),
+                      builder: (context) => const TakenCasesScreen(),
                     ),
                   );
                 }),
+            DashboardListTile(
+              assetPath: "assets/images/posted_case.png",
+              description: "You can see the posted cases here.",
+              screenName: "Posted Cases",
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const PostedCaseScreen(),
+                  ),
+                );
+              },
+            ),
             DashboardListTile(
               assetPath: "assets/images/settings.png",
               description: "You can view your profile here",
