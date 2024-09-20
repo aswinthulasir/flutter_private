@@ -116,14 +116,22 @@ class CaseDetailsScreen extends StatelessWidget {
                                       ),
                                       actions: [
                                         TextButton(
-                                          onPressed: () {
+                                          onPressed: () async {
+                                            // query for the user device token
+                                            final deviceToken =
+                                                await UserController()
+                                                    .getPostedUserDeviceToken(
+                                                        caseDetails.userId);
                                             // Take the case
                                             CaseController()
                                                 .takeCase(
-                                              caseDetails.id,
-                                              UserController.currentUserSignal
-                                                  .value!.userUID,
-                                            )
+                                                    caseDetails.id,
+                                                    UserController
+                                                        .currentUserSignal
+                                                        .value!
+                                                        .userUID,
+                                                    caseDetails.court,
+                                                    deviceToken)
                                                 .then((value) {
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(

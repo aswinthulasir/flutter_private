@@ -121,6 +121,8 @@ class TakenCasesDetailsScreen extends StatelessWidget {
                                             caseDetails.id,
                                             UserController.currentUserSignal
                                                 .value!.userUID,
+                                            caseDetails.court,
+                                            caseDetails.userId,
                                           )
                                               .then((value) {
                                             ScaffoldMessenger.of(context)

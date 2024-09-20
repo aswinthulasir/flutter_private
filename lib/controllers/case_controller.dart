@@ -1,8 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/models/case_model.dart';
+
+import 'package:http/http.dart' as http;
 
 class CaseController {
   final db = FirebaseFirestore.instance;
+
+  final _baseUrl = "https://court-notifications-backend.onrender.com";
 
   Future<String> postCase({
     required String userId,
@@ -118,28 +123,39 @@ class CaseController {
     }
   }
 
-  Future<void> takeCase(String caseId, String userId) async {
+  Future<void> takeCase(String caseId, String takenUserId,
+      String courtComplexName, String postedDeviceToken) async {
     try {
       final isExists = await db
           .collection("taken-cases")
           .where("caseId", isEqualTo: caseId)
-          .where("takenUserId", isEqualTo: userId)
+          .where("takenUserId", isEqualTo: takenUserId)
           .get();
 
       if (isExists.docs.isNotEmpty) {
         throw "Case already taken";
       } else {
         await db.collection("taken-cases").add({
-          "takenUserId": userId,
+          "takenUserId": takenUserId,
           "caseId": caseId,
         });
+
+        var url = Uri.https(_baseUrl, 'takenCaseNotification');
+        var response = await http.post(url, body: {
+          "advocate_name": UserController.currentUserSignal.value!.name,
+          "court_complex": courtComplexName,
+          "deviceToken": postedDeviceToken
+        });
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
       }
     } catch (err) {
       rethrow;
     }
   }
 
-  Future<void> removeTakenCase(String caseId, String userId) async {
+  Future<void> removeTakenCase(
+      String caseId, String userId, String courtComplexName, String postedUserId) async {
     try {
       final response = await db
           .collection("taken-cases")
@@ -149,6 +165,18 @@ class CaseController {
 
       final docId = response.docs.first.id;
       await db.collection("taken-cases").doc(docId).delete();
+
+      final postedDeviceToken =
+          await UserController().getPostedUserDeviceToken(postedUserId);
+
+      var url = Uri.https(_baseUrl, 'takenCaseNotification');
+      var res = await http.post(url, body: {
+        "advocate_name": userId,
+        "court_complex": courtComplexName,
+        "deviceToken": postedDeviceToken
+      });
+      print('Response status: ${res.statusCode}');
+      print('Response body: ${res.body}');
     } catch (err) {
       rethrow;
     }

@@ -17,14 +17,7 @@ class _PostedCaseScreenState extends State<PostedCaseScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Posted Cases"),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {});
-            },
-            icon: const Icon(Icons.refresh),
-          )
-        ],
+       
       ),
       body: Center(
         child: Column(

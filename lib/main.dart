@@ -9,7 +9,6 @@ void main() async {
   FirebaseConfig.firebaseConfig.value =
       await FirebaseConfig().initialiseFirebase();
   UserController().listenToUserChanges();
-  
   runApp(
     const MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -26,6 +25,7 @@ class InitialiserScreen extends StatelessWidget {
     if (UserController.userSignal.value == null) {
       return const LoginPage();
     } else {
+      
       return const DashboardPage();
     }
   }

@@ -27,7 +27,6 @@ class UserController {
         currentUserSignal.value = null;
       } else {
         print('User is signed in!');
-
         userSignal.value = user;
         final userDetails = await getUserDetails(user.uid);
         currentUserSignal.value = userDetails;
@@ -42,7 +41,6 @@ class UserController {
         email: email,
         password: password,
       );
-
       return user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -74,6 +72,23 @@ class UserController {
     }
   }
 
+  Future<void> updateDeviceToken(String email) async {
+    try {
+      final deviceToken = await FirebaseConfig().accessDeviceToken();
+
+      final user =
+          await db.collection("users").where("email", isEqualTo: email).get();
+
+      if (user.docs.isNotEmpty) {
+        await db.collection("users").doc(user.docs.first.id).update({
+          "deviceToken": deviceToken,
+        });
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> saveUserDetails({
     required String name,
     required String userUID,
@@ -82,12 +97,15 @@ class UserController {
     required String theUPIID,
   }) async {
     try {
+      final deviceToken = await FirebaseConfig().accessDeviceToken();
+
       final user = <String, dynamic>{
         "name": name,
         "phoneNumber": phoneNumber,
         "email": email,
         "UPIID": theUPIID,
         "userUID": userUID,
+        "deviceToken": deviceToken,
       };
 
       await db.collection("users").add(user).then((value) {
@@ -96,6 +114,22 @@ class UserController {
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<String> getPostedUserDeviceToken(String userUID) async {
+    try {
+      final user = await db
+          .collection("users")
+          .where("userUID", isEqualTo: userUID)
+          .get();
+
+      if (user.docs.isNotEmpty) {
+        return user.docs.first.data()["deviceToken"];
+      }
+    } catch (e) {
+      rethrow;
+    }
+    return "";
   }
 
   Future<UserCollection?> getUserDetails(String userUID) async {

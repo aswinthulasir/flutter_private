@@ -4,6 +4,7 @@ class UserCollection {
   final String email;
   final String upiID;
   final int phoneNumber;
+  final String deviceToken;
 
   UserCollection({
     required this.userUID,
@@ -11,6 +12,7 @@ class UserCollection {
     required this.email,
     required this.upiID,
     required this.phoneNumber,
+    required this.deviceToken,
   });
 
   factory UserCollection.fromMap(Map<String, dynamic> data) {
@@ -20,6 +22,7 @@ class UserCollection {
       email: data['email'],
       upiID: data['UPIID'],
       phoneNumber: data['phoneNumber'],
+      deviceToken: data['deviceToken'],
     );
   }
 
@@ -30,6 +33,7 @@ class UserCollection {
       'email': email,
       'upiID': upiID,
       'phoneNumber': phoneNumber,
+      'deviceToken': deviceToken,
     };
   }
 }

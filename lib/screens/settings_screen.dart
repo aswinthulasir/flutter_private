@@ -33,14 +33,35 @@ class SettingsScreen extends StatelessWidget {
               icon: Icons.logout,
               title: "Logout",
               onTap: () {
-                UserController().signOut();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
+                showDialog(
+                    context: context,
                     builder: (context) {
-                      return const InitialiserScreen();
-                    },
-                  ),
-                );
+                      return AlertDialog(
+                        title: const Text("Logout"),
+                        content: const Text("Are you sure you want to logout?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("Cancel"),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              UserController().signOut();
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return const InitialiserScreen();
+                                  },
+                                ),
+                              );
+                            },
+                            child: const Text("Logout"),
+                          ),
+                        ],
+                      );
+                    });
               },
             ),
           ],
