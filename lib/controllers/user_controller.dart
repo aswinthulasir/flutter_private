@@ -170,4 +170,12 @@ class UserController {
   Future<void> signOut() async {
     await _auth.signOut();
   }
+
+  Future<void> resetPassword(String email) {
+    try {
+      return _auth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

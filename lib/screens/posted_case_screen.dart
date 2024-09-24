@@ -17,7 +17,6 @@ class _PostedCaseScreenState extends State<PostedCaseScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Posted Cases"),
-       
       ),
       body: Center(
         child: Column(
@@ -50,38 +49,40 @@ class _PostedCaseScreenState extends State<PostedCaseScreen> {
                     itemCount: cases.length,
                     itemBuilder: (context, index) {
                       return PostedCaseCardListTile(
-                          isPosted: true,
-                          caseData: cases[index],
-                          color: Colors.yellow[50]!,
-                          onDelete: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: const Text("Delete Case"),
-                                    content: const Text(
-                                        "Are you sure you want to delete this case?"),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            CaseController()
-                                                .deleteCase(cases[index].id);
-                                          });
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text("Yes"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text("No"),
-                                      ),
-                                    ],
-                                  );
-                                });
-                          });
+                        isPosted: true,
+                        caseData: cases[index],
+                        color: Colors.yellow[50]!,
+                        onDelete: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Delete Case"),
+                                content: const Text(
+                                    "Are you sure you want to delete this case?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        CaseController()
+                                            .deleteCase(cases[index].id);
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("Yes"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("No"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
                     },
                   );
                 },

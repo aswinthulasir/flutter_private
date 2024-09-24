@@ -1,5 +1,4 @@
 import 'package:court_project/controllers/user_controller.dart';
-import 'package:court_project/main.dart';
 import 'package:court_project/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -176,8 +175,8 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  void registerUser(BuildContext context) {
-    _userController
+  void registerUser(BuildContext context) async {
+    final user = _userController
         .signupWithEmailPassword(
       email: _emailController.text,
       password: _passwordController.text,
@@ -200,11 +199,19 @@ class _SignupPageState extends State<SignupPage> {
         theUPIID: _upiIDController.text,
       )
           .then((_) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const InitialiserScreen(),
-          ),
-        );
+        value.user!.sendEmailVerification().then((_) async {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Verification mail sent successfully"),
+            ),
+          );
+          await Future.delayed(const Duration(seconds: 2));
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const LoginPage(),
+            ),
+          );
+        });
       });
     }).catchError((err) {
       ScaffoldMessenger.of(context).showSnackBar(
