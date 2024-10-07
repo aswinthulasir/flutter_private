@@ -5,13 +5,18 @@ import 'package:court_project/models/case_model.dart';
 import 'package:court_project/utils/local_database.dart';
 import 'package:flutter/material.dart';
 
-class CaseDetailsScreen extends StatelessWidget {
-  CaseDetailsScreen({required this.caseDetails, super.key});
+class CaseDetailsScreen extends StatefulWidget {
+  const CaseDetailsScreen({required this.caseDetails, super.key});
 
   final Case caseDetails;
 
+  @override
+  State<CaseDetailsScreen> createState() => _CaseDetailsScreenState();
+}
+
+class _CaseDetailsScreenState extends State<CaseDetailsScreen> {
   late String formattedDate =
-      "${caseDetails.date.day}/${caseDetails.date.month}/${caseDetails.date.year}";
+      "${widget.caseDetails.date.day}/${widget.caseDetails.date.month}/${widget.caseDetails.date.year}";
 
   final db = FirebaseFirestore.instance;
 
@@ -51,7 +56,7 @@ class CaseDetailsScreen extends StatelessWidget {
                     children: [
                       const SizedBox(height: 30),
                       Text(
-                        "Advocate Name: ${caseDetails.advocateName}",
+                        "Advocate Name: ${widget.caseDetails.advocateName}",
                         textAlign: TextAlign.start,
                         style: const TextStyle(
                           fontSize: 20,
@@ -70,7 +75,7 @@ class CaseDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Court Name: ${caseDetails.court}",
+                        "Court Name: ${widget.caseDetails.court}",
                         textAlign: TextAlign.start,
                         style: const TextStyle(
                           fontSize: 18,
@@ -79,7 +84,7 @@ class CaseDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "State: ${caseDetails.state}",
+                        "State: ${widget.caseDetails.state}",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 15,
@@ -87,7 +92,7 @@ class CaseDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "District: ${caseDetails.district}",
+                        "District: ${widget.caseDetails.district}",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 15,
@@ -95,7 +100,7 @@ class CaseDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Case Description: ${caseDetails.caseDescription} ",
+                        "Case Description: ${widget.caseDetails.caseDescription} ",
                         textAlign: TextAlign.start,
                         style: const TextStyle(
                           fontSize: 15,
@@ -122,34 +127,41 @@ class CaseDetailsScreen extends StatelessWidget {
                                             final deviceToken =
                                                 await UserController()
                                                     .getPostedUserDeviceToken(
-                                                        caseDetails.userId);
+                                                        widget.caseDetails
+                                                            .userId);
                                             // Take the case
                                             CaseController()
                                                 .takeCase(
-                                                    caseDetails.id,
+                                                    widget.caseDetails.id,
                                                     LocalDatabase()
                                                         .getUserId()!,
-                                                    caseDetails.court,
+                                                    widget.caseDetails.court,
                                                     deviceToken)
                                                 .then((value) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    "Case taken successfully!",
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      "Case taken successfully!",
+                                                    ),
                                                   ),
-                                                ),
-                                              );
+                                                );
+                                              }
                                             }).catchError((err) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                      "Error taking case: $err"),
-                                                ),
-                                              );
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                        "Error taking case: $err"),
+                                                  ),
+                                                );
+                                              }
                                             });
-                                            Navigator.of(alertContext).pop();
+                                            if (context.mounted) {
+                                              Navigator.of(alertContext).pop();
+                                            }
                                           },
                                           child: const Text("OK"),
                                         ),

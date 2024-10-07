@@ -178,18 +178,20 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   void registerUser(BuildContext context) async {
-    final user = _userController
+    _userController
         .signupWithEmailPassword(
       email: _emailController.text,
       password: _passwordController.text,
     )
         .then((value) {
       if (value == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("An error occurred"),
-          ),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("An error occurred while signing up"),
+            ),
+          );
+        }
         return;
       }
       _userController
@@ -202,25 +204,31 @@ class _SignupPageState extends State<SignupPage> {
       )
           .then((_) {
         value.user!.sendEmailVerification().then((_) async {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Verification mail sent successfully"),
-            ),
-          );
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Verification mail sent successfully"),
+              ),
+            );
+          }
           await Future.delayed(const Duration(seconds: 2));
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const LoginPage(),
-            ),
-          );
+          if (context.mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const LoginPage(),
+              ),
+            );
+          }
         });
       });
     }).catchError((err) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(err.toString()),
-        ),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(err.toString()),
+          ),
+        );
+      }
     });
   }
 }

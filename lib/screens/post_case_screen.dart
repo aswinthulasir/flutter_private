@@ -1,6 +1,5 @@
 import 'package:court_project/controllers/case_controller.dart';
 import 'package:court_project/controllers/court_controller.dart';
-import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/utils/local_database.dart';
 import 'package:flutter/material.dart';
 import 'package:signals/signals.dart';
@@ -39,7 +38,6 @@ class PostCasePageState extends State<PostCasePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _dateController.text =
         "${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}";
     super.initState();
@@ -142,7 +140,7 @@ class PostCasePageState extends State<PostCasePage> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        items: _selectedDistricts.value!
+                        items: _selectedDistricts.value
                             .map((e) =>
                                 DropdownMenuItem(value: e, child: Text(e)))
                             .toList(),
@@ -220,18 +218,22 @@ class PostCasePageState extends State<PostCasePage> {
                           caseDescription: _descriptionController.text,
                         )
                             .then((value) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  "Case posted successfully with ID: $value"),
-                            ),
-                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    "Case posted successfully with ID: $value"),
+                              ),
+                            );
+                          }
                         }).catchError((err) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(err.toString()),
-                            ),
-                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(err.toString()),
+                              ),
+                            );
+                          }
                         });
                       }
                     },

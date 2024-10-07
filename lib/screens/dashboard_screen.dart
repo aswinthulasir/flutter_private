@@ -1,4 +1,3 @@
-import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/screens/posted_case_screen.dart';
 import 'package:court_project/screens/settings_screen.dart';
 import 'package:court_project/screens/take_case_screen.dart';

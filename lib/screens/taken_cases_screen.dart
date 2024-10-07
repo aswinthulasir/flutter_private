@@ -1,5 +1,4 @@
 import 'package:court_project/controllers/case_controller.dart';
-import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/models/case_model.dart';
 import 'package:court_project/utils/local_database.dart';
 import 'package:court_project/widgets/posted_and_taken_case_list_tile.dart';
@@ -34,7 +33,6 @@ class _TakenCasesScreenState extends State<TakenCasesScreen> {
                     );
                   }
                   if (snapshot.hasError) {
-                    print(snapshot.error);
                     return const Center(
                       child: Text("An error occurred"),
                     );

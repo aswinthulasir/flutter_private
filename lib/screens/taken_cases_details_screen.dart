@@ -1,17 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:court_project/controllers/case_controller.dart';
-import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/models/case_model.dart';
 import 'package:court_project/utils/local_database.dart';
 import 'package:flutter/material.dart';
 
-class TakenCasesDetailsScreen extends StatelessWidget {
-  TakenCasesDetailsScreen({required this.caseDetails, super.key});
+class TakenCasesDetailsScreen extends StatefulWidget {
+  const TakenCasesDetailsScreen({required this.caseDetails, super.key});
 
   final Case caseDetails;
 
+  @override
+  State<TakenCasesDetailsScreen> createState() =>
+      _TakenCasesDetailsScreenState();
+}
+
+class _TakenCasesDetailsScreenState extends State<TakenCasesDetailsScreen> {
   late String formattedDate =
-      "${caseDetails.date.day}/${caseDetails.date.month}/${caseDetails.date.year}";
+      "${widget.caseDetails.date.day}/${widget.caseDetails.date.month}/${widget.caseDetails.date.year}";
 
   final db = FirebaseFirestore.instance;
 
@@ -51,7 +56,7 @@ class TakenCasesDetailsScreen extends StatelessWidget {
                     children: [
                       const SizedBox(height: 30),
                       Text(
-                        "Advocate Name: ${caseDetails.advocateName}",
+                        "Advocate Name: ${widget.caseDetails.advocateName}",
                         textAlign: TextAlign.start,
                         style: const TextStyle(
                           fontSize: 20,
@@ -70,7 +75,7 @@ class TakenCasesDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Court Name: ${caseDetails.court}",
+                        "Court Name: ${widget.caseDetails.court}",
                         textAlign: TextAlign.start,
                         style: const TextStyle(
                           fontSize: 18,
@@ -79,7 +84,7 @@ class TakenCasesDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "State: ${caseDetails.state}",
+                        "State: ${widget.caseDetails.state}",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 15,
@@ -87,7 +92,7 @@ class TakenCasesDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "District: ${caseDetails.district}",
+                        "District: ${widget.caseDetails.district}",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 15,
@@ -95,7 +100,7 @@ class TakenCasesDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Case Description: ${caseDetails.caseDescription} ",
+                        "Case Description: ${widget.caseDetails.caseDescription} ",
                         textAlign: TextAlign.start,
                         style: const TextStyle(
                           fontSize: 15,
@@ -119,29 +124,33 @@ class TakenCasesDetailsScreen extends StatelessWidget {
                                         onPressed: () {
                                           CaseController()
                                               .removeTakenCase(
-                                            caseDetails.id,
+                                            widget.caseDetails.id,
                                             LocalDatabase().getUserId()!,
-                                            caseDetails.court,
-                                            caseDetails.userId,
+                                            widget.caseDetails.court,
+                                            widget.caseDetails.userId,
                                           )
                                               .then((value) {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                  "Case withdrawn successfully",
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    "Case withdrawn successfully",
+                                                  ),
                                                 ),
-                                              ),
-                                            );
-                                            Navigator.of(alertContext).pop();
+                                              );
+                                              Navigator.of(alertContext).pop();
+                                            }
                                           }).catchError((err) {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                    "An error occurred while withdrawing case"),
-                                              ),
-                                            );
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                      "An error occurred while withdrawing case"),
+                                                ),
+                                              );
+                                            }
                                           });
                                         },
                                         child: const Text("Yes"),

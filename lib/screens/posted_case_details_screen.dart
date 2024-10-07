@@ -3,13 +3,19 @@ import 'package:court_project/models/case_model.dart';
 import 'package:court_project/screens/edit_case_screen.dart';
 import 'package:flutter/material.dart';
 
-class PostedCaseDetailsScreen extends StatelessWidget {
-  PostedCaseDetailsScreen({required this.caseDetails, super.key});
+class PostedCaseDetailsScreen extends StatefulWidget {
+  const PostedCaseDetailsScreen({required this.caseDetails, super.key});
 
   final Case caseDetails;
 
+  @override
+  State<PostedCaseDetailsScreen> createState() =>
+      _PostedCaseDetailsScreenState();
+}
+
+class _PostedCaseDetailsScreenState extends State<PostedCaseDetailsScreen> {
   late String formattedDate =
-      "${caseDetails.date.day}/${caseDetails.date.month}/${caseDetails.date.year}";
+      "${widget.caseDetails.date.day}/${widget.caseDetails.date.month}/${widget.caseDetails.date.year}";
 
   final db = FirebaseFirestore.instance;
 
@@ -49,7 +55,7 @@ class PostedCaseDetailsScreen extends StatelessWidget {
                     children: [
                       const SizedBox(height: 30),
                       Text(
-                        "Advocate Name: ${caseDetails.advocateName}",
+                        "Advocate Name: ${widget.caseDetails.advocateName}",
                         textAlign: TextAlign.start,
                         style: const TextStyle(
                           fontSize: 20,
@@ -68,7 +74,7 @@ class PostedCaseDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Court Name: ${caseDetails.court}",
+                        "Court Name: ${widget.caseDetails.court}",
                         textAlign: TextAlign.start,
                         style: const TextStyle(
                           fontSize: 18,
@@ -77,7 +83,7 @@ class PostedCaseDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "State: ${caseDetails.state}",
+                        "State: ${widget.caseDetails.state}",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 15,
@@ -85,7 +91,7 @@ class PostedCaseDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "District: ${caseDetails.district}",
+                        "District: ${widget.caseDetails.district}",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 15,
@@ -93,7 +99,7 @@ class PostedCaseDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Case Description: ${caseDetails.caseDescription} ",
+                        "Case Description: ${widget.caseDetails.caseDescription} ",
                         textAlign: TextAlign.start,
                         style: const TextStyle(
                           fontSize: 15,
@@ -108,7 +114,7 @@ class PostedCaseDetailsScreen extends StatelessWidget {
                               Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) {
                                   return EditCaseScreen(
-                                    caseData: caseDetails,
+                                    caseData: widget.caseDetails,
                                   );
                                 },
                               ));
@@ -128,7 +134,7 @@ class PostedCaseDetailsScreen extends StatelessWidget {
                               // have logic of the users who took the cases be notified
                               db
                                   .collection("cases")
-                                  .doc(caseDetails.id)
+                                  .doc(widget.caseDetails.id)
                                   .delete();
                             },
                             style: ElevatedButton.styleFrom(
