@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:court_project/controllers/case_controller.dart';
 import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/models/case_model.dart';
+import 'package:court_project/utils/local_database.dart';
 import 'package:flutter/material.dart';
 
 class TakenCasesDetailsScreen extends StatelessWidget {
@@ -119,8 +120,7 @@ class TakenCasesDetailsScreen extends StatelessWidget {
                                           CaseController()
                                               .removeTakenCase(
                                             caseDetails.id,
-                                            UserController.currentUserSignal
-                                                .value!.userUID,
+                                            LocalDatabase().getUserId()!,
                                             caseDetails.court,
                                             caseDetails.userId,
                                           )

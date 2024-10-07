@@ -21,7 +21,8 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
 
   final db = FirebaseFirestore.instance;
 
-  get onSelected => null;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +32,7 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              setState(() {
-                _selectedCourt.value = null;
-                _selectedDate.value = null;
-                _selectedDistrict.value = null;
-                _selectedState.value = null;
-              });
+              _refreshIndicatorKey.currentState?.show();
             },
             icon: const Icon(Icons.refresh),
           )
@@ -239,41 +235,54 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
               child: Watch.builder(
                 dependencies: [_selectedDate],
                 builder: (context) {
-                  return FutureBuilder(
-                    future: CaseController().getCases(
-                      state: _selectedState.value,
-                      district: _selectedDistrict.value,
-                      date: _selectedDate.value?.toDate().toString(),
-                    ),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      if (snapshot.hasError) {
-                        return const Center(
-                          child: Text("An error occurred"),
-                        );
-                      }
-                      final cases = snapshot.data as List<Case>;
-
-                      if (cases.isEmpty) {
-                        return const Center(
-                          child: Text("No cases found"),
-                        );
-                      }
-
-                      return ListView.builder(
-                        itemCount: cases.length,
-                        itemBuilder: (context, index) {
-                          return CaseCardListTile(
-                            caseData: cases[index],
-                            color: Colors.teal[50]!,
-                          );
-                        },
+                  return RefreshIndicator(
+                    key: _refreshIndicatorKey,
+                    color: Colors.white,
+                    backgroundColor: Colors.blue,
+                    strokeWidth: 4.0,
+                    onRefresh: () async {
+                      setState(() {});
+                      return await Future<void>.delayed(
+                        const Duration(seconds: 2),
                       );
                     },
+                    child: FutureBuilder(
+                      future: CaseController().getCases(
+                        state: _selectedState.value,
+                        district: _selectedDistrict.value,
+                        date: _selectedDate.value?.toDate().toString(),
+                      ),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (snapshot.hasError) {
+                          return const Center(
+                            child: Text("An error occurred"),
+                          );
+                        }
+                        final cases = snapshot.data as List<Case>;
+
+                        if (cases.isEmpty) {
+                          return const Center(
+                            child: Text("No cases found"),
+                          );
+                        }
+
+                        return ListView.builder(
+                          itemCount: cases.length,
+                          itemBuilder: (context, index) {
+                            return CaseCardListTile(
+                              caseData: cases[index],
+                              color: Colors.teal[50]!,
+                            );
+                          },
+                        );
+                      },
+                    ),
                   );
                 },
               ),

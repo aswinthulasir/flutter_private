@@ -1,6 +1,7 @@
 import 'package:court_project/controllers/case_controller.dart';
 import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/models/case_model.dart';
+import 'package:court_project/utils/local_database.dart';
 import 'package:court_project/widgets/posted_and_taken_case_list_tile.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,12 @@ class PostedCaseScreen extends StatefulWidget {
 
 class _PostedCaseScreenState extends State<PostedCaseScreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -24,7 +31,7 @@ class _PostedCaseScreenState extends State<PostedCaseScreen> {
             Expanded(
               child: FutureBuilder(
                 future: CaseController().getPostedCases(
-                  UserController.currentUserSignal.value!.userUID,
+                  LocalDatabase().getUserId()!,
                 ),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {

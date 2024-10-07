@@ -100,6 +100,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   const SizedBox(height: 20),
                   TextField(
+                    obscureText: true,
                     controller: _passwordController,
                     decoration: const InputDecoration(
                       labelText: "Password",
@@ -110,6 +111,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   const SizedBox(height: 20),
                   TextField(
+                    obscureText: true,
                     controller: _confirmPasswordController,
                     decoration: const InputDecoration(
                       labelText: "Confirm Password",

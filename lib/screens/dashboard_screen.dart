@@ -3,6 +3,7 @@ import 'package:court_project/screens/posted_case_screen.dart';
 import 'package:court_project/screens/settings_screen.dart';
 import 'package:court_project/screens/take_case_screen.dart';
 import 'package:court_project/screens/taken_cases_screen.dart';
+import 'package:court_project/utils/local_database.dart';
 import 'package:court_project/widgets/dashboard_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'post_case_screen.dart';
@@ -14,8 +15,7 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            "Welcome ${UserController.currentUserSignal.value?.name ?? "User"}"),
+        title: Text("Welcome ${LocalDatabase().getName() ?? "User"}"),
       ),
       body: Center(
         child: Column(

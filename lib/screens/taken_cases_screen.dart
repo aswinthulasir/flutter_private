@@ -1,6 +1,7 @@
 import 'package:court_project/controllers/case_controller.dart';
 import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/models/case_model.dart';
+import 'package:court_project/utils/local_database.dart';
 import 'package:court_project/widgets/posted_and_taken_case_list_tile.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,7 @@ class _TakenCasesScreenState extends State<TakenCasesScreen> {
             Expanded(
               child: FutureBuilder(
                 future: CaseController().getTakenCases(
-                  UserController.currentUserSignal.value!.userUID,
+                  LocalDatabase().getUserId()!,
                 ),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -66,8 +67,7 @@ class _TakenCasesScreenState extends State<TakenCasesScreen> {
                                     onPressed: () {
                                       CaseController().removeTakenCase(
                                         cases[index].id,
-                                        UserController
-                                            .currentUserSignal.value!.userUID,
+                                        LocalDatabase().getUserId()!,
                                         cases[index].court,
                                         cases[index].userId,
                                       );

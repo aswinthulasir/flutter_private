@@ -1,6 +1,7 @@
 import 'package:court_project/controllers/case_controller.dart';
 import 'package:court_project/controllers/court_controller.dart';
 import 'package:court_project/controllers/user_controller.dart';
+import 'package:court_project/utils/local_database.dart';
 import 'package:flutter/material.dart';
 import 'package:signals/signals.dart';
 
@@ -209,8 +210,7 @@ class PostCasePageState extends State<PostCasePage> {
                         // Implement post case logic
                         _caseController
                             .postCase(
-                          userId:
-                              UserController.currentUserSignal.value!.userUID,
+                          userId: LocalDatabase().getUserId()!,
                           mobileNumber: int.parse(_mobileController.text),
                           date: _selectedDate.value,
                           state: _selectedState.value,

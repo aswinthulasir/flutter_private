@@ -1,4 +1,5 @@
 import 'package:court_project/controllers/user_controller.dart';
+import 'package:court_project/utils/local_database.dart';
 import 'package:flutter/material.dart';
 
 class EditAccountScreen extends StatefulWidget {
@@ -16,13 +17,14 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   final _mobileController = TextEditingController();
   final _upiController = TextEditingController();
 
+  final LocalDatabase _localDatabase = LocalDatabase();
+
   @override
   void initState() {
-    _nameController.text = UserController.currentUserSignal.value!.name;
-    _emailController.text = UserController.currentUserSignal.value!.email;
-    _mobileController.text =
-        UserController.currentUserSignal.value!.phoneNumber.toString();
-    _upiController.text = UserController.currentUserSignal.value!.upiID;
+    _nameController.text = _localDatabase.getName()!;
+    _emailController.text = _localDatabase.getEmail()!;
+    _mobileController.text = _localDatabase.getPhoneNumber().toString();
+    _upiController.text = _localDatabase.getUpiID()!;
     super.initState();
   }
 

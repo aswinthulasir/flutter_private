@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/models/case_model.dart';
+import 'package:court_project/utils/local_database.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -8,6 +9,8 @@ class CaseController {
   final db = FirebaseFirestore.instance;
 
   final _baseUrl = "https://court-notifications-backend.onrender.com";
+
+  final LocalDatabase localDB = LocalDatabase();
 
   Future<String> postCase({
     required String userId,
@@ -89,6 +92,7 @@ class CaseController {
   }
 
   Future<List<Case>> getPostedCases(String userid) {
+    print("User ID: $userid");
     try {
       final response = db
           .collection("cases")
@@ -142,7 +146,7 @@ class CaseController {
 
         var url = Uri.https(_baseUrl, 'takenCaseNotification');
         var response = await http.post(url, body: {
-          "advocate_name": UserController.currentUserSignal.value!.name,
+          "advocate_name": localDB.getName(),
           "court_complex": courtComplexName,
           "deviceToken": postedDeviceToken
         });
@@ -154,8 +158,8 @@ class CaseController {
     }
   }
 
-  Future<void> removeTakenCase(
-      String caseId, String userId, String courtComplexName, String postedUserId) async {
+  Future<void> removeTakenCase(String caseId, String userId,
+      String courtComplexName, String postedUserId) async {
     try {
       final response = await db
           .collection("taken-cases")

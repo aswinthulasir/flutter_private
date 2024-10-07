@@ -1,16 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:court_project/configs/firebase_config.dart';
 import 'package:court_project/models/user_collection_model.dart';
+import 'package:court_project/utils/local_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:signals/signals.dart';
 
 class UserController {
   late final FirebaseAuth _auth;
 
   late FirebaseFirestore db;
-  static final Signal<User?> userSignal = signal<User?>(null);
-  static final Signal<UserCollection?> currentUserSignal =
-      signal<UserCollection?>(null);
+
+  final LocalDatabase localDB = LocalDatabase();
 
   UserController() {
     _auth = FirebaseAuth.instanceFor(
@@ -22,14 +21,16 @@ class UserController {
   void listenToUserChanges() async {
     _auth.authStateChanges().listen((User? user) async {
       if (user == null) {
-        print('User is currently signed out!');
-        userSignal.value = null;
-        currentUserSignal.value = null;
+        localDB.clearUserData();
       } else {
-        print('User is signed in!');
-        userSignal.value = user;
         final userDetails = await getUserDetails(user.uid);
-        currentUserSignal.value = userDetails;
+        localDB.saveUserData(
+          userId: userDetails!.userUID,
+          email: userDetails.email,
+          name: userDetails.name,
+          phoneNumber: userDetails.phoneNumber,
+          upiID: userDetails.upiID,
+        );
       }
     });
   }
@@ -152,7 +153,7 @@ class UserController {
     try {
       final user = await db
           .collection("users")
-          .where("userUID", isEqualTo: currentUserSignal.value!.userUID)
+          .where("userUID", isEqualTo: localDB.getUserId())
           .get();
 
       if (user.docs.isNotEmpty) {
@@ -162,6 +163,14 @@ class UserController {
           "UPIID": upiID,
         });
       }
+
+      localDB.saveUserData(
+        userId: localDB.getUserId()!,
+        email: email,
+        name: name,
+        phoneNumber: localDB.getPhoneNumber()!,
+        upiID: upiID,
+      );
     } catch (e) {
       rethrow;
     }

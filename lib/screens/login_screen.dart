@@ -56,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 20),
                   TextField(
                     controller: _passwordController,
+                    obscureText: true,
                     decoration: InputDecoration(
                       labelText: "Password",
                       border: OutlineInputBorder(
@@ -74,19 +75,27 @@ class _LoginPageState extends State<LoginPage> {
                     child: MaterialButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          await _userController.signinWithEmailPassword(
+                          await _userController
+                              .signinWithEmailPassword(
                             email: _emailController.text,
                             password: _passwordController.text,
-                          );
+                          )
+                              .then((value) async {
+                            await _userController
+                                .updateDeviceToken(_emailController.text);
 
-                          await _userController
-                              .updateDeviceToken(_emailController.text);
-
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const InitialiserScreen(),
-                            ),
-                          );
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const InitialiserScreen(),
+                              ),
+                            );
+                          }).catchError((err) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(err.toString()),
+                              ),
+                            );
+                          });
                         }
                       },
                       height: 60,
@@ -110,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                   Center(
                     child: MaterialButton(
                       onPressed: () async {
-                        Navigator.of(context).pushReplacement(
+                        Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => const SignupPage(),
                           ),
