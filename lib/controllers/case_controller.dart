@@ -4,6 +4,7 @@ import 'package:court_project/models/case_model.dart';
 import 'package:court_project/utils/local_database.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:signals/signals.dart';
 
 class CaseController {
   final db = FirebaseFirestore.instance;
@@ -11,6 +12,10 @@ class CaseController {
   final _baseUrl = "https://court-notifications-backend.onrender.com";
 
   final LocalDatabase localDB = LocalDatabase();
+
+  final int documentLimit = 20;
+
+  final casesSnapshot = signal<List<DocumentSnapshot>>([]);
 
   Future<String> postCase({
     required String userId,
@@ -91,8 +96,54 @@ class CaseController {
     }
   }
 
+  final casesFetched = signal<List<Case>>([]);
+  DocumentSnapshot? lastDocument;
+
+  Future<List<Case>> fetchPaginatedCases({
+    String? state,
+    String? district,
+    String? date,
+  }) async {
+    try {
+      if (lastDocument == null) {
+        await db
+            .collection("cases")
+            .where("state", isEqualTo: state)
+            .where("district", isEqualTo: district)
+            .where("date", isEqualTo: date)
+            .orderBy("date")
+            .limit(documentLimit)
+            .get()
+            .then((value) {
+          final result =
+              value.docs.map((doc) => Case.fromFirestore(doc, null)).toList();
+          casesFetched.value.addAll(result);
+          lastDocument = value.docs.last;
+        });
+      } else {
+        await db
+            .collection("cases")
+            .where("state", isEqualTo: state)
+            .where("district", isEqualTo: district)
+            .where("date", isEqualTo: date)
+            .orderBy("date")
+            .startAfterDocument(lastDocument!)
+            .limit(documentLimit)
+            .get()
+            .then((value) {
+          final result =
+              value.docs.map((doc) => Case.fromFirestore(doc, null)).toList();
+          casesFetched.value.addAll(result);
+          lastDocument = value.docs.last;
+        });
+      }
+      return casesFetched.value;
+    } catch (err) {
+      rethrow;
+    }
+  }
+
   Future<List<Case>> getPostedCases(String userid) {
-    print("User ID: $userid");
     try {
       final response = db
           .collection("cases")

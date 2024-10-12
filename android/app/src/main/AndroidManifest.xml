@@ -4,7 +4,9 @@
     <application
         android:label="court_project"
         android:name="${applicationName}"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher">
+        
         <meta-data
             android:name="firebase_messaging_auto_init_enabled"
             android:value="false" />

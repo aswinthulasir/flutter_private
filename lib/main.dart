@@ -9,8 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   FirebaseConfig.firebaseConfig.value =
       await FirebaseConfig().initialiseFirebase();
-  LocalDatabase.initialise();
-  UserController().listenToUserChanges();
+  await LocalDatabase.initialise();
   runApp(
     const MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -31,10 +30,21 @@ class _InitialiserScreenState extends State<InitialiserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (localDB.getUserId() == null || localDB.getName() == null) {
-      return const LoginPage();
-    } else {
-      return const DashboardPage();
-    }
+    return StreamBuilder(
+      stream: UserController().authStateStream(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        if (snapshot.hasData) {
+          return const DashboardPage();
+        }
+        return const LoginPage();
+      },
+    );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/main.dart';
 import 'package:court_project/screens/signup_screen.dart';
+import 'package:court_project/utils/local_database.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -81,6 +82,16 @@ class _LoginPageState extends State<LoginPage> {
                             password: _passwordController.text,
                           )
                               .then((value) async {
+                            final user = await _userController
+                                .getUserDetails(value.user!.uid);
+
+                            await LocalDatabase().saveUserData(
+                              userId: user!.userUID,
+                              email: user.email,
+                              name: user.name,
+                              phoneNumber: user.phoneNumber,
+                              upiID: user.upiID,
+                            );
                             await _userController
                                 .updateDeviceToken(_emailController.text);
 

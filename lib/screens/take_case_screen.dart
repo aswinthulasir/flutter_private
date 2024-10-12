@@ -24,6 +24,10 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
+  final CaseController caseController = CaseController();
+
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,7 +251,7 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                       );
                     },
                     child: FutureBuilder(
-                      future: CaseController().getCases(
+                      future: CaseController().fetchPaginatedCases(
                         state: _selectedState.value,
                         district: _selectedDistrict.value,
                         date: _selectedDate.value?.toDate().toString(),
@@ -264,22 +268,27 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
                             child: Text("An error occurred"),
                           );
                         }
-                        final cases = snapshot.data as List<Case>;
 
-                        if (cases.isEmpty) {
+                        if (snapshot.data == null) {
                           return const Center(
                             child: Text("No cases found"),
                           );
                         }
 
-                        return ListView.builder(
-                          itemCount: cases.length,
-                          itemBuilder: (context, index) {
-                            return CaseCardListTile(
-                              caseData: cases[index],
-                              color: Colors.teal[50]!,
-                            );
-                          },
+                        final cases = snapshot.data as List<Case>;
+
+                        return ListView(
+                          children: [
+                            ...cases.map((casedata) {
+                              return CaseCardListTile(
+                                caseData: casedata,
+                                color: Colors.teal[50]!,
+                              );
+                            }),
+                            Center(
+                              child: _buildLoadMoreButton(),
+                            ),
+                          ],
                         );
                       },
                     ),
@@ -289,6 +298,23 @@ class _TakecaseScreenState extends State<TakecaseScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoadMoreButton() {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      alignment: Alignment.center,
+      child: ElevatedButton(
+        onPressed: () {
+          caseController.fetchPaginatedCases(
+            state: _selectedState.value,
+            district: _selectedDistrict.value,
+            date: _selectedDate.value?.toDate().toString(),
+          );
+        },
+        child: const Text('Load More'),
       ),
     );
   }

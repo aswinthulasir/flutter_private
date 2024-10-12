@@ -49,12 +49,12 @@ class SettingsScreen extends StatelessWidget {
                           TextButton(
                             onPressed: () {
                               UserController().signOut();
-                              Navigator.of(context).pushReplacement(
+                              Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                  builder: (context) {
-                                    return const InitialiserScreen();
-                                  },
+                                  builder: (context) =>
+                                      const InitialiserScreen(),
                                 ),
+                                (Route<dynamic> route) => false,
                               );
                             },
                             child: const Text("Logout"),

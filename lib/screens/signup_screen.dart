@@ -1,5 +1,6 @@
 import 'package:court_project/controllers/user_controller.dart';
 import 'package:court_project/screens/login_screen.dart';
+import 'package:court_project/utils/local_database.dart';
 import 'package:flutter/material.dart';
 
 class SignupPage extends StatefulWidget {
@@ -202,7 +203,14 @@ class _SignupPageState extends State<SignupPage> {
         email: value.user!.email!,
         theUPIID: _upiIDController.text,
       )
-          .then((_) {
+          .then((value2) async {
+        await LocalDatabase().saveUserData(
+          userId: value2.id,
+          email: _emailController.text,
+          name: _nameController.text,
+          phoneNumber: int.parse(_mobileNumberController.text),
+          upiID: _upiIDController.text,
+        );
         value.user!.sendEmailVerification().then((_) async {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(

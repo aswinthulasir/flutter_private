@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:court_project/configs/firebase_config.dart';
 import 'package:court_project/models/user_collection_model.dart';
@@ -5,40 +7,44 @@ import 'package:court_project/utils/local_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserController {
-  late final FirebaseAuth _auth;
+  late final FirebaseAuth auth;
 
   late FirebaseFirestore db;
 
   final LocalDatabase localDB = LocalDatabase();
 
+  Stream<User?> authStateStream() async* {
+    await for (User? user in FirebaseAuth.instance.authStateChanges()) {
+      if (user != null) {
+        final userDetails = await getUserDetails(user.uid);
+
+        if (userDetails != null) {
+          await localDB.saveUserData(
+            userId: user.uid,
+            email: userDetails.email,
+            name: userDetails.name,
+            phoneNumber: userDetails.phoneNumber,
+            upiID: userDetails.upiID,
+          );
+          yield user;
+        }
+      } else {
+        yield null;
+      }
+    }
+  }
+
   UserController() {
-    _auth = FirebaseAuth.instanceFor(
+    auth = FirebaseAuth.instanceFor(
       app: FirebaseConfig.firebaseConfig.value!,
     );
     db = FirebaseFirestore.instance;
   }
 
-  void listenToUserChanges() async {
-    _auth.authStateChanges().listen((User? user) async {
-      if (user == null) {
-        localDB.clearUserData();
-      } else {
-        final userDetails = await getUserDetails(user.uid);
-        localDB.saveUserData(
-          userId: userDetails!.userUID,
-          email: userDetails.email,
-          name: userDetails.name,
-          phoneNumber: userDetails.phoneNumber,
-          upiID: userDetails.upiID,
-        );
-      }
-    });
-  }
-
   Future<UserCredential?> signupWithEmailPassword(
       {required String email, required String password}) async {
     try {
-      final user = await _auth.createUserWithEmailAndPassword(
+      final user = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -56,10 +62,11 @@ class UserController {
     return null;
   }
 
-  Future<void> signinWithEmailPassword(
+  Future<UserCredential> signinWithEmailPassword(
       {required String email, required String password}) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      return await auth.signInWithEmailAndPassword(
+          email: email, password: password);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         throw "No user found for that email.";
@@ -90,7 +97,7 @@ class UserController {
     }
   }
 
-  Future<void> saveUserDetails({
+  Future<DocumentReference<Map<String, dynamic>>> saveUserDetails({
     required String name,
     required String userUID,
     required int phoneNumber,
@@ -109,9 +116,7 @@ class UserController {
         "deviceToken": deviceToken,
       };
 
-      await db.collection("users").add(user).then((value) {
-        print("User added with ID: ${value.id}");
-      });
+      return await db.collection("users").add(user);
     } catch (e) {
       rethrow;
     }
@@ -177,12 +182,13 @@ class UserController {
   }
 
   Future<void> signOut() async {
-    await _auth.signOut();
+    localDB.clearUserData();
+    await auth.signOut();
   }
 
   Future<void> resetPassword(String email) {
     try {
-      return _auth.sendPasswordResetEmail(email: email);
+      return auth.sendPasswordResetEmail(email: email);
     } catch (e) {
       rethrow;
     }
