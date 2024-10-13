@@ -15,6 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
   late final UserController _userController;
+  late final TextEditingController _forgotEmailController;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -23,7 +24,16 @@ class _LoginPageState extends State<LoginPage> {
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     _userController = UserController();
+    _forgotEmailController = TextEditingController();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _forgotEmailController.dispose();
+    super.dispose();
   }
 
   @override
@@ -68,7 +78,77 @@ class _LoginPageState extends State<LoginPage> {
                   Row(
                     children: [
                       const Text("Oops! forgot your password?"),
-                      TextButton(onPressed: () {}, child: const Text("Reset")),
+                      TextButton(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text("Reset Password"),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text(
+                                          "Enter your email address to reset your password",
+                                        ),
+                                        const SizedBox(height: 20),
+                                        TextField(
+                                          controller: _forgotEmailController,
+                                          decoration: const InputDecoration(
+                                            labelText: "Email Address",
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(
+                                                  10,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text("Cancel")),
+                                      TextButton(
+                                          onPressed: () {
+                                            _userController
+                                                .resetPassword(
+                                              _forgotEmailController.text,
+                                            )
+                                                .then((_) {
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      "Password reset link sent to your email",
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            }).catchError((err) {
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content:
+                                                        Text(err.toString()),
+                                                  ),
+                                                );
+                                              }
+                                            });
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text("Reset")),
+                                    ],
+                                  );
+                                });
+                          },
+                          child: const Text("Reset")),
                     ],
                   ),
                   const SizedBox(height: 20),
